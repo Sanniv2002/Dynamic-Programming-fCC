@@ -1,6 +1,9 @@
 # All the Dynamic Programming problems here are examples of https://www.youtube.com/watch?v=oBt53YbR9Kk
 
 
+# Memoization
+
+
 def fib(n, memo={}):
     if n in memo:
         return memo[n]
@@ -60,15 +63,52 @@ def howSum(targetSum: int, numbers: list, memo={}) -> list:
     return None
 
 
-def canConstruct(target, wordBank, memo={}) -> bool:
+def canConstruct(target: str, wordBank: list, memo={}) -> bool:
     if (target in memo):
         return memo[target]
     if (target == ""):
         return True
     for word in wordBank:
-        if (target.find(word) == 0):                            #Don't use target.index() because it throws an exception if the substring is not found
+        # Don't use target.index() because it throws an exception if the substring is not found
+        if (target.find(word) == 0):
             suffix = target[len(word):]
             memo[suffix] = canConstruct(suffix, wordBank, memo)
             if memo[suffix] == True:
                 return True
     return False
+
+
+def countConstruct(target: str, wordBank: list, memo={}) -> int:
+    if target in memo:
+        return memo[target]
+    if (target == ''):
+        return 1
+
+    totalCount = 0
+
+    for word in wordBank:
+        if (target.find(word) == 0):
+            memo[target] = countConstruct(target[len(word):], wordBank, memo)
+            totalCount += memo[target]
+
+    return totalCount
+
+
+def allConstruct(target: str, wordBank: list, memo={}) -> list[list]:
+    if (target in memo):
+        return memo[target]
+
+    if (target == ''):
+        return [[]]
+
+    result = []
+
+    for word in wordBank:
+        if (target.find(word) == 0):
+            suffix = target[len(word):]
+            suffixWays = allConstruct(suffix, wordBank, memo)
+            targetWays = [[word] + way for way in suffixWays]
+            result.append(*targetWays)
+
+    memo[target] = result
+    return result
